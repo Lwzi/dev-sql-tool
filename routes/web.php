@@ -33,4 +33,5 @@ require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dev', [DevController::class, 'index'])->name('dev.index');
+    Route::post('/dev/execute', [DevController::class, 'execute'])->name('dev.execute');
 });

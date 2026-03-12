@@ -12,7 +12,7 @@
                 'errorMessage' => $errorMessage,
             ])
 
-            @if(filled($sql) || !empty($errorMessage))
+            @if(!empty($executionId) || !empty($errorMessage))
                 @include('dev.partials.results-panel', [
                     'results' => $results,
                     'columns' => $columns,

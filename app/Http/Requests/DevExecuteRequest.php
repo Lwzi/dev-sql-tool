@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DevIndexRequest extends FormRequest
+class DevExecuteRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,7 @@ class DevIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'execution_id' => ['nullable', 'integer', 'min:1'],
-            'page' => ['nullable', 'integer', 'min:1'],
+            'sql' => ['required', 'string'],
         ];
     }
 

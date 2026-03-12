@@ -5,7 +5,9 @@
         </div>
     @endif
 
-    <form method="GET" action="{{ route('dev.index') }}">
+    <form method="POST" action="{{ route('dev.execute') }}" data-submit-lock>
+        @csrf
+
         <div class="mb-4">
             <label for="sql" class="block text-sm font-medium text-gray-700 mb-2">
                 SQL Statement
@@ -16,7 +18,7 @@
                 rows="8"
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 placeholder="Only SELECT statements are allowed..."
-            >{{ old('sql', $sql ?? request('sql')) }}</textarea>
+            >{{ old('sql', $sql ?? '') }}</textarea>
         </div>
 
         @error('sql')
@@ -26,6 +28,8 @@
         <div class="flex gap-3">
             <button
                 type="submit"
+                data-submit-button
+                data-loading-text="Executing..."
                 class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700"
             >
                 Execute
@@ -46,4 +50,28 @@
             </button>
         </div>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form[data-submit-lock]').forEach(function (form) {
+                if (form.dataset.submitLockBound === '1') {
+                    return;
+                }
+
+                form.dataset.submitLockBound = '1';
+
+                form.addEventListener('submit', function () {
+                    const button = form.querySelector('[data-submit-button]');
+
+                    if (!button || button.disabled) {
+                        return;
+                    }
+
+                    button.textContent = button.dataset.loadingText || 'Submitting...';
+                    button.disabled = true;
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+            });
+        });
+    </script>
 </div>
