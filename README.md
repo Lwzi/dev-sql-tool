@@ -21,12 +21,19 @@
 
 ## 快速启动
 
-环境要求：
+推荐环境：
 
-- PHP 8.1+
-- Composer
-- Node.js / npm
-- MySQL
+- PHP 8.2+
+- Composer 2.x
+- Node.js 20 LTS / 22 LTS
+- npm 10+
+- MySQL 8.0（5.7+ 兼容）
+
+本地验证环境：
+
+- PHP 8.4
+- Node.js 25.6.1
+- MySQL 5.7
 
 启动步骤：
 
