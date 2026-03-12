@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\QueryResultsExport;
 use App\Http\Requests\DevExecuteRequest;
+use App\Http\Requests\DevExportRequest;
 use App\Http\Requests\DevIndexRequest;
 use App\Models\SqlExecutionLog;
 use App\Services\SqlExecutionLogService;
 use App\Services\SqlExecutorService;
 use Illuminate\Database\QueryException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use InvalidArgumentException;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class DevController extends Controller
@@ -112,6 +117,52 @@ class DevController extends Controller
             ]);
     }
 
+    public function exportJson(DevExportRequest $request): StreamedResponse|RedirectResponse
+    {
+        [$execution, $redirect] = $this->resolveExportExecution($request);
+
+        if ($redirect) {
+            return $redirect;
+        }
+
+        try {
+            $rows = $this->sqlExecutorService->executeAll($execution->sql_text);
+        } catch (Throwable $exception) {
+            return $this->exportErrorRedirect($exception, $execution->id);
+        }
+
+        $filename = $this->buildExportFilename('json', $execution->id);
+
+        return response()->streamDownload(function () use ($rows) {
+            echo json_encode(
+                $rows->all(),
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+        }, $filename, [
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ]);
+    }
+
+    public function exportExcel(DevExportRequest $request): BinaryFileResponse|RedirectResponse
+    {
+        [$execution, $redirect] = $this->resolveExportExecution($request);
+
+        if ($redirect) {
+            return $redirect;
+        }
+
+        try {
+            $rows = $this->sqlExecutorService->executeAll($execution->sql_text);
+        } catch (Throwable $exception) {
+            return $this->exportErrorRedirect($exception, $execution->id);
+        }
+
+        return Excel::download(
+            new QueryResultsExport($rows),
+            $this->buildExportFilename('xlsx', $execution->id)
+        );
+    }
+
     private function loadExecutionPage(
         Request $request,
         int $executionId,
@@ -161,6 +212,33 @@ class DevController extends Controller
         }
     }
 
+    private function resolveExportExecution(DevExportRequest $request): array
+    {
+        $executionId = (int) $request->validated('execution_id');
+        $execution = $this->sqlExecutionLogService->findSuccessfulExecutionForUser(
+            executionId: $executionId,
+            userId: (int) $request->user()->id
+        );
+
+        if ($execution) {
+            return [$execution, null];
+        }
+
+        return [
+            null,
+            redirect()
+                ->route('dev.index')
+                ->with('errorMessage', 'Execution record not found.'),
+        ];
+    }
+
+    private function exportErrorRedirect(Throwable $exception, int $executionId): RedirectResponse
+    {
+        return redirect()
+            ->route('dev.index', ['execution_id' => $executionId])
+            ->with('errorMessage', $this->displayableError($exception));
+    }
+
     private function canUseFlashedPage(mixed $executedPage, int $executionId, int $page): bool
     {
         if (! is_array($executedPage)) {
@@ -205,5 +283,15 @@ class DevController extends Controller
         $errorMessage = trim((string) $request->session()->pull('errorMessage', ''));
 
         return $errorMessage === '' ? null : $errorMessage;
+    }
+
+    private function buildExportFilename(string $extension, int $executionId): string
+    {
+        return sprintf(
+            'sql-export-%d-%s.%s',
+            $executionId,
+            now()->format('Ymd_His'),
+            $extension
+        );
     }
 }

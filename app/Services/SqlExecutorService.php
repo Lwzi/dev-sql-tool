@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -68,6 +69,20 @@ class SqlExecutorService
         ];
     }
 
+    public function executeAll(string $sql): Collection
+    {
+        $sql = trim($sql);
+        $this->ensureSelectOnly($sql);
+
+        $connection = $this->connection();
+        $this->applyMySqlExecutionTimeout($connection);
+
+        $total = $this->countRows($connection, $sql);
+        $this->guardTotalRows($total);
+
+        return $this->fetchAllRows($connection, $sql);
+    }
+
     private function connection(): Connection
     {
         return DB::connection();
@@ -95,12 +110,21 @@ class SqlExecutorService
         ));
     }
 
-    private function fetchRows(Connection $connection, string $sql, int $page)
+    private function fetchRows(Connection $connection, string $sql, int $page): Collection
     {
         $offset = max(0, ($page - 1) * self::PER_PAGE);
         $pagedSql = sprintf('select * from (%s) as temp_result limit ? offset ?', $sql);
 
         return collect($connection->select($pagedSql, [self::PER_PAGE, $offset]))
+            ->map(fn ($row) => (array) $row)
+            ->values();
+    }
+
+    private function fetchAllRows(Connection $connection, string $sql): Collection
+    {
+        $exportSql = sprintf('select * from (%s) as temp_result', $sql);
+
+        return collect($connection->select($exportSql))
             ->map(fn ($row) => (array) $row)
             ->values();
     }

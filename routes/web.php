@@ -34,4 +34,6 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dev', [DevController::class, 'index'])->name('dev.index');
     Route::post('/dev/execute', [DevController::class, 'execute'])->name('dev.execute');
+    Route::get('/dev/export/json', [DevController::class, 'exportJson'])->name('dev.export.json');
+    Route::get('/dev/export/excel', [DevController::class, 'exportExcel'])->name('dev.export.excel');
 });
