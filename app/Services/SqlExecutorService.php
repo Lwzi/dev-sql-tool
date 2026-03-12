@@ -8,8 +8,7 @@ use Illuminate\Support\Str;
 
 class SqlExecutorService
 {
-    private const PER_PAGE = 20;
-    private const MAX_PER_PAGE = 100;
+    private const PER_PAGE = 50;
     private const MAX_TOTAL_ROWS = 5000;
     private const TIMEOUT_MS = 5000;
 
@@ -48,7 +47,7 @@ class SqlExecutorService
         }
     }
 
-    public function execute(string $sql, int $page = 1, int $perPage = 20): array
+    public function execute(string $sql, int $page = 1): array
     {
         $sql = trim($sql);
         $page = max(1, $page);
@@ -57,16 +56,15 @@ class SqlExecutorService
         $connection = $this->connection();
         $this->applyMySqlExecutionTimeout($connection);
 
-        $perPage = $this->normalizePerPage($perPage);
         $total = $this->countRows($connection, $sql);
         $this->guardTotalRows($total);
-        $rows = $this->fetchRows($connection, $sql, $page, $perPage);
+        $rows = $this->fetchRows($connection, $sql, $page);
 
         return [
             'rows' => $rows,
             'total' => $total,
             'page' => $page,
-            'per_page' => $perPage,
+            'per_page' => self::PER_PAGE,
         ];
     }
 
@@ -75,16 +73,9 @@ class SqlExecutorService
         return DB::connection();
     }
 
-    private function normalizePerPage(int $perPage): int
-    {
-        $resolved = $perPage > 0 ? $perPage : self::PER_PAGE;
-
-        return min($resolved, self::MAX_PER_PAGE, $this->maxTotalRows());
-    }
-
     private function countRows(Connection $connection, string $sql): int
     {
-        $countSql = sprintf('SELECT COUNT(*) AS aggregate FROM (%s) AS temp_table', $sql);
+        $countSql = sprintf('select count(*) as aggregate from (%s) as temp_count', $sql);
 
         return (int) ($connection->selectOne($countSql)->aggregate ?? 0);
     }
@@ -104,12 +95,12 @@ class SqlExecutorService
         ));
     }
 
-    private function fetchRows(Connection $connection, string $sql, int $page, int $perPage)
+    private function fetchRows(Connection $connection, string $sql, int $page)
     {
-        $offset = max(0, ($page - 1) * $perPage);
-        $pagedSql = sprintf('%s LIMIT %d OFFSET %d', $sql, $perPage, $offset);
+        $offset = max(0, ($page - 1) * self::PER_PAGE);
+        $pagedSql = sprintf('select * from (%s) as temp_result limit ? offset ?', $sql);
 
-        return collect($connection->select($pagedSql))
+        return collect($connection->select($pagedSql, [self::PER_PAGE, $offset]))
             ->map(fn ($row) => (array) $row)
             ->values();
     }

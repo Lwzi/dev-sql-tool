@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SeedInitAdminRoleSeeder::class,
             SeedInitAdminUserSeeder::class,
             SeedBindAdminRoleToUserSeeder::class,
+            SeedInitTestUsersSeeder::class,
         ]);
     }
 }
