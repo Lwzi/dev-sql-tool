@@ -1,71 +1,96 @@
-<div class="bg-white shadow rounded-2xl p-6">
-  @if (!empty($errorMessage))
-    <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3">
-      {{ $errorMessage }}
-    </div>
-  @endif
-
-  <form method="POST" action="{{ route('dev.execute') }}" data-submit-lock>
-    @csrf
-
-    <div class="mb-4">
-      <label for="sql" class="block text-sm font-medium text-gray-700 mb-2">
-        SQL Statement
-      </label>
-      <textarea
-        id="sql"
-        name="sql"
-        rows="8"
-        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        placeholder="Only SELECT statements are allowed..."
-      >{{ old('sql', $sql ?? '') }}</textarea>
-    </div>
-
-    @error('sql')
-      <div class="mb-4 text-sm text-red-600">{{ $message }}</div>
-    @enderror
-
-    <div class="flex gap-3">
-      <button
-        type="submit"
-        data-submit-button
-        data-loading-text="Executing..."
-        class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700"
-      >
-        Execute
-      </button>
+<section class="dev-sql-panel">
+  <div class="dev-sql-panel-body">
+    <div class="dev-sql-panel-header">
+      <div>
+        <h2 class="dev-sql-section-title">Compose Query</h2>
+        <p class="dev-sql-section-copy">
+          Work in a single large editor, keep the query readable, and treat every execution as an auditable snapshot.
+        </p>
+      </div>
 
       @if(!empty($executionId))
-        <a
-          href="{{ route('dev.export.excel', ['execution_id' => $executionId]) }}"
-          class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700"
-        >
-          Export Excel
-        </a>
-        <a
-          href="{{ route('dev.export.json', ['execution_id' => $executionId]) }}"
-          class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700"
-        >
-          Export JSON
-        </a>
-      @else
-        <button
-          type="button"
-          disabled
-          class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest opacity-50 cursor-not-allowed"
-        >
-          Export Excel
-        </button>
-        <button
-          type="button"
-          disabled
-          class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest opacity-50 cursor-not-allowed"
-        >
-          Export JSON
-        </button>
+        <span class="dev-sql-chip">Execution #{{ $executionId }}</span>
       @endif
     </div>
-  </form>
+
+    <div class="dev-sql-alert dev-sql-alert--warning">
+      <span class="dev-sql-alert-title">Safety Boundary</span>
+      <p class="dev-sql-alert-copy">
+        This tool is intentionally narrow. Only read-only <code>SELECT</code> queries are accepted, and exports reuse the same safety rules.
+      </p>
+    </div>
+
+    @if (!empty($errorMessage))
+      <div class="mt-4 dev-sql-alert dev-sql-alert--error">
+        <span class="dev-sql-alert-title">Query Error</span>
+        <p class="dev-sql-alert-copy">{{ $errorMessage }}</p>
+      </div>
+    @endif
+
+    <form method="POST" action="{{ route('dev.execute') }}" data-submit-lock class="mt-6">
+      @csrf
+
+      <div>
+        <label for="sql" class="dev-sql-label">SQL Statement</label>
+        <textarea
+          id="sql"
+          name="sql"
+          rows="8"
+          class="dev-sql-textarea"
+          placeholder="select id, name, email from users order by id desc"
+        >{{ old('sql', $sql ?? '') }}</textarea>
+      </div>
+
+      @error('sql')
+        <p class="dev-sql-error-copy">{{ $message }}</p>
+      @enderror
+
+      <div class="dev-sql-toolbar">
+        <button
+          type="submit"
+          data-submit-button
+          data-loading-text="Executing..."
+          class="dev-sql-btn dev-sql-btn--primary"
+        >
+          Execute
+        </button>
+
+        @if(!empty($executionId))
+          <a
+            href="{{ route('dev.export.excel', ['execution_id' => $executionId]) }}"
+            class="dev-sql-btn dev-sql-btn--secondary"
+          >
+            Export Excel
+          </a>
+          <a
+            href="{{ route('dev.export.json', ['execution_id' => $executionId]) }}"
+            class="dev-sql-btn dev-sql-btn--secondary"
+          >
+            Export JSON
+          </a>
+        @else
+          <button
+            type="button"
+            disabled
+            class="dev-sql-btn dev-sql-btn--secondary dev-sql-btn--ghost"
+          >
+            Export Excel
+          </button>
+          <button
+            type="button"
+            disabled
+            class="dev-sql-btn dev-sql-btn--secondary dev-sql-btn--ghost"
+          >
+            Export JSON
+          </button>
+        @endif
+
+        <p class="dev-sql-toolbar-copy">
+          Exports are generated from the full query result, not from the visible page only.
+        </p>
+      </div>
+    </form>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -90,4 +115,4 @@
       });
     });
   </script>
-</div>
+</section>

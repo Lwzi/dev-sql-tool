@@ -1,3 +1,644 @@
+@import url('https://fonts.bunny.net/css?family=fraunces:600|manrope:400,500,600,700,800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .dev-sql-page {
+    --dev-sql-ink: #162033;
+    --dev-sql-muted: #607086;
+    --dev-sql-panel: rgba(255, 255, 255, 0.88);
+    --dev-sql-panel-border: rgba(129, 148, 176, 0.16);
+    --dev-sql-glow: rgba(65, 107, 202, 0.12);
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(157, 196, 255, 0.18), transparent 28%),
+      radial-gradient(circle at top right, rgba(211, 225, 245, 0.22), transparent 26%),
+      linear-gradient(180deg, #f8fbff 0%, #f2f6fb 52%, #eef3f8 100%);
+    color: var(--dev-sql-ink);
+    padding: 2.5rem 1rem 3rem;
+  }
+
+  .dev-sql-shell {
+    margin: 0 auto;
+    max-width: 76rem;
+  }
+
+  .dev-sql-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(123, 145, 175, 0.14);
+    border-radius: 2rem;
+    padding: 1.6rem 1.75rem;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(246, 250, 255, 0.9)),
+      rgba(255, 255, 255, 0.88);
+    box-shadow:
+      0 20px 48px rgba(24, 39, 75, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  }
+
+  .dev-sql-hero::after {
+    content: '';
+    position: absolute;
+    inset: auto -4rem -4rem auto;
+    width: 14rem;
+    height: 14rem;
+    border-radius: 9999px;
+    background: radial-gradient(circle, var(--dev-sql-glow), transparent 68%);
+    pointer-events: none;
+  }
+
+  .dev-sql-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.38rem 0.72rem;
+    background: rgba(20, 32, 51, 0.05);
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-title {
+    margin-top: 0.95rem;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.9rem, 3vw, 2.8rem);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+  }
+
+  .dev-sql-subtitle {
+    margin-top: 0.65rem;
+    max-width: 34rem;
+    color: var(--dev-sql-muted);
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .dev-sql-meta {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .dev-sql-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.65rem 0.95rem;
+    background: rgba(244, 248, 253, 0.9);
+    border: 1px solid rgba(125, 145, 173, 0.14);
+    color: #42546a;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .dev-sql-stack {
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .dev-sql-panel {
+    border: 1px solid var(--dev-sql-panel-border);
+    border-radius: 1.75rem;
+    background: var(--dev-sql-panel);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 18px 44px rgba(28, 36, 54, 0.07);
+  }
+
+  .dev-sql-panel-body {
+    padding: 1.5rem;
+  }
+
+  .dev-sql-panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .dev-sql-section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.45rem;
+    line-height: 1.2;
+    color: #111827;
+  }
+
+  .dev-sql-section-copy {
+    margin-top: 0.35rem;
+    color: var(--dev-sql-muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .dev-sql-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.55rem 0.85rem;
+    background: rgba(18, 36, 61, 0.06);
+    color: #314155;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-alert {
+    border-radius: 1.25rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid transparent;
+  }
+
+  .dev-sql-alert-title {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-alert-copy {
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .dev-sql-alert--warning {
+    background: rgba(240, 246, 255, 0.86);
+    border-color: rgba(108, 141, 196, 0.18);
+    color: #31527b;
+  }
+
+  .dev-sql-alert--error {
+    background: rgba(255, 241, 242, 0.86);
+    border-color: rgba(225, 99, 114, 0.2);
+    color: #9f233c;
+  }
+
+  .dev-sql-label {
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    color: #344054;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-textarea {
+    width: 100%;
+    min-height: 22rem;
+    resize: vertical;
+    border: 1px solid rgba(124, 145, 170, 0.18);
+    border-radius: 1.4rem;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.94));
+    padding: 1.25rem 1.35rem;
+    color: #0f172a;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.78),
+      0 12px 32px rgba(15, 23, 42, 0.05);
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .dev-sql-textarea:focus {
+    outline: none;
+    border-color: rgba(47, 94, 174, 0.5);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.78),
+      0 0 0 4px rgba(81, 126, 206, 0.12),
+      0 18px 40px rgba(24, 39, 75, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .dev-sql-error-copy {
+    margin-top: 0.55rem;
+    color: #c2410c;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .dev-sql-toolbar {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .dev-sql-toolbar-copy {
+    width: 100%;
+    color: var(--dev-sql-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .dev-sql-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.95rem 1.35rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease, background-color 180ms ease;
+  }
+
+  .dev-sql-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .dev-sql-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(81, 126, 206, 0.16);
+  }
+
+  .dev-sql-btn--primary {
+    background: linear-gradient(135deg, #2454b8, #173f8f);
+    color: #fff;
+    box-shadow: 0 14px 24px rgba(36, 84, 184, 0.18);
+  }
+
+  .dev-sql-btn--secondary {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(109, 134, 166, 0.2);
+    color: #314155;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  }
+
+  .dev-sql-btn--ghost {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .dev-sql-table-shell {
+    overflow: hidden;
+  }
+
+  .dev-sql-table-wrap {
+    overflow-x: auto;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(122, 144, 171, 0.14);
+    background: rgba(255, 255, 255, 0.84);
+  }
+
+  .dev-sql-table {
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .dev-sql-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: rgba(243, 247, 252, 0.97);
+    color: #344054;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-table th,
+  .dev-sql-table td {
+    padding: 1rem 1rem;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  .dev-sql-table tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.88);
+  }
+
+  .dev-sql-table tbody tr:nth-child(even) {
+    background: rgba(246, 248, 251, 0.82);
+  }
+
+  .dev-sql-table tbody tr:hover {
+    background: rgba(234, 241, 250, 0.82);
+  }
+
+  .dev-sql-cell {
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #263445;
+    font-size: 0.92rem;
+  }
+
+  .dev-sql-results-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    color: var(--dev-sql-muted);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .dev-sql-empty {
+    display: grid;
+    place-items: center;
+    gap: 1rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+
+  .dev-sql-empty-icon {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 1.5rem;
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.12), rgba(217, 119, 6, 0.16));
+    color: #1d4ed8;
+  }
+
+  .dev-sql-empty-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    color: #0f172a;
+  }
+
+  .dev-sql-empty-copy {
+    max-width: 28rem;
+    color: var(--dev-sql-muted);
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+
+  .dev-sql-pager {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+  }
+
+  .dev-sql-pager-meta {
+    color: var(--dev-sql-muted);
+    font-size: 0.9rem;
+  }
+
+  .dev-sql-pager-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .dev-sql-pager-link,
+  .dev-sql-pager-disabled {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6rem;
+    border-radius: 9999px;
+    padding: 0.8rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dev-sql-pager-link {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(109, 134, 166, 0.2);
+    color: #334155;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .dev-sql-pager-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(15, 23, 42, 0.06);
+  }
+
+  .dev-sql-pager-disabled {
+    background: rgba(241, 245, 249, 0.92);
+    color: #94a3b8;
+    border: 1px solid rgba(203, 213, 225, 0.74);
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 640px) {
+    .dev-sql-page {
+      padding-top: 1.5rem;
+      padding-bottom: 2rem;
+    }
+
+    .dev-sql-hero,
+    .dev-sql-panel-body {
+      padding: 1.25rem;
+    }
+
+    .dev-sql-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .dev-sql-btn,
+    .dev-sql-pager-link,
+    .dev-sql-pager-disabled {
+      width: 100%;
+    }
+
+    .dev-sql-pager {
+      align-items: stretch;
+    }
+
+    .dev-sql-pager-links {
+      width: 100%;
+    }
+  }
+
+  .guest-shell {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(173, 202, 255, 0.18), transparent 26%),
+      linear-gradient(180deg, #f8fbff 0%, #f2f6fb 52%, #eef3f8 100%);
+    padding: 2rem 1rem;
+  }
+
+  .guest-card {
+    width: 100%;
+    max-width: 28rem;
+    border-radius: 1.75rem;
+    border: 1px solid rgba(129, 148, 176, 0.16);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 22px 44px rgba(15, 23, 42, 0.08);
+    padding: 1.75rem;
+  }
+
+  .guest-kicker {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.35rem 0.7rem;
+    background: rgba(36, 84, 184, 0.08);
+    color: #31527b;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .guest-title {
+    margin-top: 1rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.65rem;
+    line-height: 1.1;
+    color: #0f172a;
+  }
+
+  .guest-copy {
+    margin-top: 0.75rem;
+    color: #607086;
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+
+  .guest-content {
+    margin-top: 1.5rem;
+  }
+
+  .landing-shell {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, rgba(165, 197, 255, 0.18), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(205, 219, 239, 0.2), transparent 24%),
+      linear-gradient(180deg, #f8fbff 0%, #f2f6fb 52%, #eef3f8 100%);
+    color: #162033;
+    padding: 2rem 1rem 3rem;
+  }
+
+  .landing-wrap {
+    margin: 0 auto;
+    max-width: 70rem;
+  }
+
+  .landing-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .landing-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: #0f172a;
+  }
+
+  .landing-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .landing-hero {
+    display: grid;
+    gap: 1.25rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(129, 148, 176, 0.16);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 24px 52px rgba(15, 23, 42, 0.08);
+    padding: 2rem;
+  }
+
+  .landing-kicker {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: 9999px;
+    padding: 0.38rem 0.72rem;
+    background: rgba(36, 84, 184, 0.08);
+    color: #31527b;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .landing-title {
+    max-width: 44rem;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 3.4vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+  }
+
+  .landing-copy {
+    max-width: 30rem;
+    color: #607086;
+    font-size: 0.96rem;
+    line-height: 1.68;
+  }
+
+  .landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .landing-grid {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .landing-card {
+    border-radius: 1.5rem;
+    border: 1px solid rgba(129, 148, 176, 0.14);
+    background: rgba(255, 255, 255, 0.72);
+    padding: 1.1rem 1.15rem;
+  }
+
+  .landing-card-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #334155;
+  }
+
+  .landing-card-copy {
+    margin-top: 0.45rem;
+    color: #607086;
+    font-size: 0.94rem;
+    line-height: 1.65;
+  }
+
+  @media (max-width: 768px) {
+    .landing-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .landing-nav {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
